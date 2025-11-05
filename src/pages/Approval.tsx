@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -181,7 +182,7 @@ const Approval = () => {
         </div>
       </header>
 
-      <main className="container mx-auto max-w-3xl px-4 py-8">
+      <main className="container mx-auto max-w-3xl px-4 py-8 pb-32">
         <div className="space-y-8">
           {images.map((image, index) => (
             <Card
@@ -196,11 +197,13 @@ const Approval = () => {
             >
               <CardContent className="p-6">
                 <div className="mb-4 overflow-hidden rounded-lg">
-                  <img
-                    src={image.image_url}
-                    alt={`Imagem ${index + 1}`}
-                    className="h-auto w-full"
-                  />
+                  <AspectRatio ratio={1}>
+                    <img
+                      src={image.image_url}
+                      alt={`Imagem ${index + 1}`}
+                      className="h-full w-full object-cover"
+                    />
+                  </AspectRatio>
                 </div>
 
                 <div className="space-y-4">
@@ -257,15 +260,17 @@ const Approval = () => {
           ))}
         </div>
 
-        <div className="sticky bottom-0 mt-8 rounded-lg border bg-card p-4 shadow-[var(--shadow-elegant)]">
-          <Button
-            size="lg"
-            className="w-full"
-            onClick={handleFinalize}
-            disabled={loading || isCompleted}
-          >
-            {loading ? "Finalizando..." : "Finalizar Aprovação"}
-          </Button>
+        <div className="fixed bottom-0 left-0 right-0 border-t bg-card/95 backdrop-blur-sm p-4 shadow-[var(--shadow-elegant)]">
+          <div className="container mx-auto max-w-3xl">
+            <Button
+              size="lg"
+              className="w-full"
+              onClick={handleFinalize}
+              disabled={loading || isCompleted}
+            >
+              {loading ? "Finalizando..." : "Finalizar Aprovação"}
+            </Button>
+          </div>
         </div>
       </main>
     </div>

@@ -157,7 +157,7 @@ const BatchDetail = () => {
             {images.map((image) => (
               <Card key={image.id} className="shadow-[var(--shadow-card)]">
                 <CardContent className="p-0">
-                  <div className="relative aspect-video overflow-hidden rounded-t-lg">
+                  <div className="relative aspect-square overflow-hidden rounded-t-lg">
                     <img
                       src={image.image_url}
                       alt="Imagem do lote"
