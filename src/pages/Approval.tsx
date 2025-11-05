@@ -34,6 +34,7 @@ const Approval = () => {
   const [batch, setBatch] = useState<Batch | null>(null);
   const [images, setImages] = useState<Image[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
 
   // Garantir que o componente está montado
@@ -43,15 +44,38 @@ const Approval = () => {
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
-    
-    if (uniqueLink) {
-      loadBatch();
-    }
-  }, [uniqueLink, mounted]);
+    const initializeComponent = async () => {
+      try {
+        if (!uniqueLink) {
+          console.warn('No uniqueLink parameter found');
+          setLoading(false);
+          return;
+        }
+
+        // Garantir que o Supabase está inicializado
+        if (!supabase) {
+          console.error('Supabase client not initialized');
+          setLoading(false);
+          return;
+        }
+
+        // Tentar carregar os dados
+        await loadBatch();
+      } catch (error) {
+        console.error('Error in component initialization:', error);
+        setLoading(false);
+      }
+    };
+
+    // Iniciar carregamento imediatamente
+    initializeComponent();
+  }, [uniqueLink]);
 
   const loadBatch = async () => {
     try {
+      // Forçar um pequeno delay para garantir que o cliente Supabase está pronto
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const { data: batchData, error: batchError } = await supabase
         .from("batches")
         .select("*, clients(name)")
@@ -162,11 +186,21 @@ const Approval = () => {
     }
   };
 
-  // Mostrar estado de loading enquanto não estiver montado ou carregando
+  // Mostrar estado de loading ou erro
   if (!mounted || loading || !batch) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-background to-muted">
-        <p className="text-muted-foreground">Carregando...</p>
+      <div className="fixed inset-0 flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-background to-muted p-4">
+        <p className="text-muted-foreground text-center">
+          {error || "Carregando..."}
+        </p>
+        {error && (
+          <Button
+            variant="outline"
+            onClick={() => window.location.reload()}
+          >
+            Tentar novamente
+          </Button>
+        )}
       </div>
     );
   }
