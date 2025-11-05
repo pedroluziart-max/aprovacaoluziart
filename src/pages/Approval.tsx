@@ -73,14 +73,16 @@ const Approval = () => {
 
   const loadBatch = async () => {
     try {
-      // Forçar um pequeno delay para garantir que o cliente Supabase está pronto
-      await new Promise(resolve => setTimeout(resolve, 100));
+      console.log('Iniciando loadBatch');
       
       const { data: batchData, error: batchError } = await supabase
         .from("batches")
         .select("*, clients(name)")
         .eq("unique_link", uniqueLink)
         .single();
+
+      console.log('Dados do batch:', batchData);
+      console.log('Erro do batch:', batchError);
 
       if (batchError || !batchData) {
         toast.error("Lote não encontrado");
@@ -91,18 +93,25 @@ const Approval = () => {
       setBatch(batchData);
       setIsCompleted(batchData.status === "completed");
 
+      console.log('Buscando imagens para o batch:', batchData.id);
+      
       const { data: imagesData, error: imagesError } = await supabase
         .from("images")
         .select("*")
         .eq("batch_id", batchData.id)
         .order("created_at");
 
+      console.log('Dados das imagens:', imagesData);
+      console.log('Erro das imagens:', imagesError);
+
       if (imagesError) {
+        console.error('Erro ao carregar imagens:', imagesError);
         toast.error("Erro ao carregar imagens");
         setLoading(false);
         return;
       }
 
+      console.log('Definindo estados finais');
       setImages(imagesData || []);
       setLoading(false);
     } catch (error) {
@@ -186,29 +195,21 @@ const Approval = () => {
     }
   };
 
-  // Mostrar estado de loading ou erro
+  // Mostrar estado de loading
   if (!mounted || loading || !batch) {
     return (
-      <div className="fixed inset-0 flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-background to-muted p-4">
-        <p className="text-muted-foreground text-center">
-          {error || "Carregando..."}
+      <div className="absolute inset-0 flex items-center justify-center bg-background">
+        <p className="text-muted-foreground">
+          Carregando...
         </p>
-        {error && (
-          <Button
-            variant="outline"
-            onClick={() => window.location.reload()}
-          >
-            Tentar novamente
-          </Button>
-        )}
       </div>
     );
   }
 
   if (isCompleted) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-        <Card className="w-full max-w-md text-center shadow-[var(--shadow-elegant)]">
+      <div className="absolute inset-0 flex items-center justify-center bg-background">
+        <Card className="mx-4 w-full max-w-md text-center shadow-md">
           <CardContent className="py-12">
             <CheckCircle2 className="mx-auto mb-4 h-16 w-16 text-[hsl(var(--success))]" />
             <h2 className="mb-2 text-2xl font-bold">Obrigado!</h2>
@@ -221,24 +222,27 @@ const Approval = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen w-full">
-      <header className="sticky top-0 z-10 w-full border-b bg-background">
-        <div className="container px-4 py-6">
-          <h1 className="text-2xl font-bold text-primary break-words">{batch.name}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Cliente: {batch.clients.name}
-          </p>
-          <p className="mt-4 text-sm">
-            Aprove ou reprove as imagens abaixo e adicione observações se desejar.
-          </p>
-        </div>
-      </header>
+  console.log('Renderizando componente', { batch, images, loading });
 
-      <main className="w-full">
-        <div className="container mx-auto max-w-3xl px-4 py-8 pb-32">
-          <div className="space-y-8">
-            {images.map((image, index) => (
+  return (
+    <div className="min-h-[100dvh] w-full bg-background">
+      <div className="min-h-full w-full">
+        <header className="sticky top-0 z-10 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="container px-4 py-6">
+            <h1 className="text-2xl font-bold text-primary break-words">{batch?.name}</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Cliente: {batch?.clients?.name}
+            </p>
+            <p className="mt-4 text-sm">
+              Aprove ou reprove as imagens abaixo e adicione observações se desejar.
+            </p>
+          </div>
+        </header>
+
+        <main className="relative w-full pb-24">
+          <div className="container mx-auto max-w-3xl px-4 py-8">
+            <div className="space-y-8">
+              {images.map((image, index) => (
               <Card
                 key={image.id}
                 className={`shadow-[var(--shadow-card)] transition-all ${
@@ -317,16 +321,21 @@ const Approval = () => {
         </div>
       </main>
 
-      <div className="sticky bottom-0 w-full border-t bg-background py-4">
-        <div className="container mx-auto max-w-3xl px-4">
-          <Button
-            size="lg"
-            className="w-full"
-            onClick={handleFinalize}
-            disabled={loading || isCompleted}
-          >
-            {loading ? "Finalizando..." : "Finalizar Aprovação"}
-          </Button>
+            </div>
+          </div>
+        </main>
+
+        <div className="fixed bottom-0 left-0 right-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="container mx-auto max-w-3xl p-4">
+            <Button
+              size="lg"
+              className="w-full"
+              onClick={handleFinalize}
+              disabled={loading || isCompleted}
+            >
+              {loading ? "Finalizando..." : "Finalizar Aprovação"}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
