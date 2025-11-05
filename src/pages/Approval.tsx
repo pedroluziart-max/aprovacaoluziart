@@ -195,40 +195,35 @@ const Approval = () => {
     }
   };
 
-  // Mostrar estado de loading
-  if (!mounted || loading || !batch) {
+  const renderContent = () => {
+    if (!mounted || loading || !batch) {
+      return (
+        <div className="flex min-h-screen items-center justify-center bg-background">
+          <p className="text-muted-foreground">Carregando...</p>
+        </div>
+      );
+    }
+
+    if (isCompleted) {
+      return (
+        <div className="flex min-h-screen items-center justify-center bg-background p-4">
+          <Card className="w-full max-w-md text-center">
+            <CardContent className="py-12">
+              <CheckCircle2 className="mx-auto mb-4 h-16 w-16 text-[hsl(var(--success))]" />
+              <h2 className="mb-2 text-2xl font-bold">Obrigado!</h2>
+              <p className="text-muted-foreground">
+                Seu feedback foi enviado com sucesso.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+
     return (
-      <div className="absolute inset-0 flex items-center justify-center bg-background">
-        <p className="text-muted-foreground">
-          Carregando...
-        </p>
-      </div>
-    );
-  }
-
-  if (isCompleted) {
-    return (
-      <div className="absolute inset-0 flex items-center justify-center bg-background">
-        <Card className="mx-4 w-full max-w-md text-center shadow-md">
-          <CardContent className="py-12">
-            <CheckCircle2 className="mx-auto mb-4 h-16 w-16 text-[hsl(var(--success))]" />
-            <h2 className="mb-2 text-2xl font-bold">Obrigado!</h2>
-            <p className="text-muted-foreground">
-              Seu feedback foi enviado com sucesso.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  console.log('Renderizando componente', { batch, images, loading });
-
-  return (
-    <div className="min-h-[100dvh] w-full bg-background">
-      <div className="min-h-full w-full">
-        <header className="sticky top-0 z-10 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container px-4 py-6">
+      <div className="flex min-h-screen flex-col bg-background">
+        <header className="sticky top-0 z-10 w-full border-b bg-background/95">
+          <div className="w-full px-4 py-6">
             <h1 className="text-2xl font-bold text-primary break-words">{batch?.name}</h1>
             <p className="mt-1 text-sm text-muted-foreground">
               Cliente: {batch?.clients?.name}
@@ -239,8 +234,8 @@ const Approval = () => {
           </div>
         </header>
 
-        <main className="relative w-full pb-24">
-          <div className="container mx-auto max-w-3xl px-4 py-8">
+        <main className="flex-1 w-full overflow-y-auto pb-24">
+          <div className="w-full px-4 py-8 max-w-3xl mx-auto">
             <div className="space-y-8">
               {images.map((image, index) => (
               <Card
@@ -319,14 +314,10 @@ const Approval = () => {
             ))}
           </div>
         </div>
-      </main>
-
-            </div>
-          </div>
         </main>
 
-        <div className="fixed bottom-0 left-0 right-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container mx-auto max-w-3xl p-4">
+        <div className="sticky bottom-0 left-0 right-0 border-t bg-background/95">
+          <div className="w-full max-w-3xl mx-auto px-4 py-4">
             <Button
               size="lg"
               className="w-full"
@@ -338,7 +329,10 @@ const Approval = () => {
           </div>
         </div>
       </div>
-    </div>
+    );
+  };
+
+  return renderContent();
   );
 };
 
