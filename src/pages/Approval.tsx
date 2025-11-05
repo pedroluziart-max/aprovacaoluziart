@@ -222,9 +222,9 @@ const Approval = () => {
   }
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-gradient-to-br from-background to-muted overscroll-none">
-      <header className="w-full border-b bg-card/50 backdrop-blur-sm">
-        <div className="w-full px-4 py-6 text-center">
+    <div className="min-h-screen w-full">
+      <header className="sticky top-0 z-10 w-full border-b bg-background">
+        <div className="container px-4 py-6">
           <h1 className="text-2xl font-bold text-primary break-words">{batch.name}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Cliente: {batch.clients.name}
@@ -235,7 +235,7 @@ const Approval = () => {
         </div>
       </header>
 
-      <main className="flex-1 w-full overflow-auto">
+      <main className="w-full">
         <div className="container mx-auto max-w-3xl px-4 py-8 pb-32">
           <div className="space-y-8">
             {images.map((image, index) => (
@@ -317,8 +317,8 @@ const Approval = () => {
         </div>
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 border-t bg-card/95 backdrop-blur-sm p-4 shadow-[var(--shadow-elegant)]">
-        <div className="container mx-auto max-w-3xl">
+      <div className="sticky bottom-0 w-full border-t bg-background py-4">
+        <div className="container mx-auto max-w-3xl px-4">
           <Button
             size="lg"
             className="w-full"
