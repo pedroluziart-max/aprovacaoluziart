@@ -278,22 +278,22 @@ const Approval = () => {
                 </div>
               </CardContent>
             </Card>
-          ))}
         </div>
-
-        <div className="fixed bottom-0 left-0 right-0 border-t bg-card/95 backdrop-blur-sm p-3 sm:p-4 shadow-[var(--shadow-elegant)]">
-          <div className="container mx-auto max-w-3xl">
-            <Button
-              size="lg"
-              className="w-full text-sm sm:text-base"
-              onClick={handleFinalize}
-              disabled={loading || isCompleted}
-            >
-              {loading ? "Finalizando..." : "Finalizar Aprovação"}
-            </Button>
-          </div>
-        </div>
+      </div>
       </main>
+
+      <div className="fixed bottom-0 left-0 right-0 border-t bg-card/95 backdrop-blur-sm p-3 sm:p-4 shadow-[var(--shadow-elegant)]">
+        <div className="container mx-auto max-w-3xl">
+          <Button
+            size="lg"
+            className="w-full text-sm sm:text-base"
+            onClick={handleFinalize}
+            disabled={loading || isCompleted}
+          >
+            {loading ? "Finalizando..." : "Finalizar Aprovação"}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
