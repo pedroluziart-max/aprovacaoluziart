@@ -34,7 +34,7 @@ const Approval = () => {
   const isMobile = useIsMobile();
   const [batch, setBatch] = useState<Batch | null>(null);
   const [images, setImages] = useState<Image[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
 
   useEffect(() => {
@@ -44,32 +44,41 @@ const Approval = () => {
   }, [uniqueLink]);
 
   const loadBatch = async () => {
-    const { data: batchData, error: batchError } = await supabase
-      .from("batches")
-      .select("*, clients(name)")
-      .eq("unique_link", uniqueLink)
-      .single();
+    try {
+      const { data: batchData, error: batchError } = await supabase
+        .from("batches")
+        .select("*, clients(name)")
+        .eq("unique_link", uniqueLink)
+        .single();
 
-    if (batchError || !batchData) {
-      toast.error("Lote não encontrado");
-      return;
+      if (batchError || !batchData) {
+        toast.error("Lote não encontrado");
+        setLoading(false);
+        return;
+      }
+
+      setBatch(batchData);
+      setIsCompleted(batchData.status === "completed");
+
+      const { data: imagesData, error: imagesError } = await supabase
+        .from("images")
+        .select("*")
+        .eq("batch_id", batchData.id)
+        .order("created_at");
+
+      if (imagesError) {
+        toast.error("Erro ao carregar imagens");
+        setLoading(false);
+        return;
+      }
+
+      setImages(imagesData || []);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error loading batch:", error);
+      toast.error("Erro ao carregar dados");
+      setLoading(false);
     }
-
-    setBatch(batchData);
-    setIsCompleted(batchData.status === "completed");
-
-    const { data: imagesData, error: imagesError } = await supabase
-      .from("images")
-      .select("*")
-      .eq("batch_id", batchData.id)
-      .order("created_at");
-
-    if (imagesError) {
-      toast.error("Erro ao carregar imagens");
-      return;
-    }
-
-    setImages(imagesData || []);
   };
 
   const updateImage = (id: string, field: string, value: string) => {
@@ -162,10 +171,10 @@ const Approval = () => {
     );
   }
 
-  if (!batch) {
+  if (!batch || loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p>Carregando...</p>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background to-muted">
+        <p className="text-muted-foreground">Carregando...</p>
       </div>
     );
   }
