@@ -13,39 +13,23 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`
-          }
-        });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-        if (error) throw error;
+      if (error) throw error;
 
-        toast.success("Cadastro realizado com sucesso!");
-        navigate("/dashboard");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) throw error;
-
-        toast.success("Login realizado com sucesso!");
-        navigate("/dashboard");
-      }
+      toast.success("Login realizado com sucesso!");
+      navigate("/dashboard");
     } catch (error: any) {
-      toast.error(error.message || `Erro ao fazer ${isSignUp ? 'cadastro' : 'login'}`);
+      toast.error(error.message || "Erro ao fazer login");
     } finally {
       setLoading(false);
     }
@@ -60,7 +44,7 @@ const Login = () => {
           </div>
           <CardTitle className="text-2xl font-bold">Área Admin</CardTitle>
           <CardDescription>
-            {isSignUp ? 'Crie sua conta para acessar o painel' : 'Entre com suas credenciais para acessar o painel'}
+            Entre com suas credenciais para acessar o painel
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -88,19 +72,9 @@ const Login = () => {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? (isSignUp ? "Cadastrando..." : "Entrando...") : (isSignUp ? "Cadastrar" : "Entrar")}
+              {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
-          
-          <div className="mt-4 text-center text-sm">
-            <button
-              type="button"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-primary hover:underline"
-            >
-              {isSignUp ? "Já tem uma conta? Faça login" : "Não tem uma conta? Cadastre-se"}
-            </button>
-          </div>
         </CardContent>
       </Card>
     </div>

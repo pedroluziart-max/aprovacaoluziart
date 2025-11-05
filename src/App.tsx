@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Clients from "./pages/Clients";
 import NewBatch from "./pages/NewBatch";
 import BatchDetail from "./pages/BatchDetail";
+import Batches from "./pages/Batches";
 import Approval from "./pages/Approval";
 import NotFound from "./pages/NotFound";
 
@@ -24,10 +25,11 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/clients" element={<Clients />} />
-          <Route path="/batches/new" element={<NewBatch />} />
-          <Route path="/batches/:id" element={<BatchDetail />} />
-          <Route path="/approval/:uniqueLink" element={<Approval />} />
+        <Route path="/clients" element={<Clients />} />
+        <Route path="/batches" element={<Batches />} />
+        <Route path="/batches/new" element={<NewBatch />} />
+        <Route path="/batches/:id" element={<BatchDetail />} />
+        <Route path="/approval/:uniqueLink" element={<Approval />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

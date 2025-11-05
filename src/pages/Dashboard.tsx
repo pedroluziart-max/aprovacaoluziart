@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, FolderKanban, TrendingUp, Plus, LogOut } from "lucide-react";
+import { Users, FolderKanban, TrendingUp, Plus, LogOut, List } from "lucide-react";
 import { AuthGuard } from "@/components/AuthGuard";
 
 const Dashboard = () => {
@@ -133,6 +133,14 @@ const Dashboard = () => {
                 >
                   <Users className="mr-2 h-4 w-4" />
                   Gerenciar Clientes
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={() => navigate("/batches")}
+                >
+                  <List className="mr-2 h-4 w-4" />
+                  Ver Todos os Lotes
                 </Button>
                 <Button
                   variant="outline"
