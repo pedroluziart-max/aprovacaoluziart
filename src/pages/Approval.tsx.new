@@ -1,13 +1,13 @@
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -148,12 +148,12 @@ const Approval = () => {
 
   if (isCompleted) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background to-muted p-4">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background to-muted p-3">
         <Card className="w-full max-w-md text-center shadow-[var(--shadow-elegant)]">
-          <CardContent className="py-12">
-            <CheckCircle2 className="mx-auto mb-4 h-16 w-16 text-[hsl(var(--success))]" />
-            <h2 className="mb-2 text-2xl font-bold">Obrigado!</h2>
-            <p className="text-muted-foreground">
+          <CardContent className="py-8">
+            <CheckCircle2 className="mx-auto mb-4 h-12 w-12 text-[hsl(var(--success))]" />
+            <h2 className="mb-2 text-xl font-bold">Obrigado!</h2>
+            <p className="text-sm text-muted-foreground">
               Seu feedback foi enviado com sucesso.
             </p>
           </CardContent>
@@ -165,40 +165,40 @@ const Approval = () => {
   if (!batch) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p>Carregando...</p>
+        <p className="text-sm">Carregando...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-background to-muted">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted overflow-x-hidden">
       <header className="sticky top-0 z-10 border-b bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 sm:py-6 text-center">
-          <h1 className="text-xl sm:text-2xl font-bold text-primary">{batch.name}</h1>
-          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
+        <div className="container mx-auto px-3 py-4 text-center">
+          <h1 className="text-lg font-bold text-primary break-words">{batch.name}</h1>
+          <p className="mt-1 text-xs text-muted-foreground">
             Cliente: {batch.clients.name}
           </p>
-          <p className="mt-2 sm:mt-4 text-xs sm:text-sm">
-            Aprove ou reprove as imagens abaixo e adicione observações se desejar.
+          <p className="mt-2 text-xs">
+            {isMobile ? "Toque para aprovar ou reprovar" : "Aprove ou reprove as imagens abaixo e adicione observações se desejar."}
           </p>
         </div>
       </header>
 
-      <main className="container mx-auto max-w-3xl px-2 sm:px-4 py-4 sm:py-8 pb-32">
-        <div className="space-y-8">
+      <main className="container mx-auto max-w-3xl px-2 py-4 pb-20">
+        <div className="space-y-4">
           {images.map((image, index) => (
             <Card
               key={image.id}
-              className={`shadow-[var(--shadow-card)] transition-all ${
+              className={`shadow-sm transition-all ${
                 image.status === "approved"
-                  ? "ring-2 ring-[hsl(var(--success))]"
+                  ? "ring-1 ring-[hsl(var(--success))]"
                   : image.status === "rejected"
-                  ? "ring-2 ring-destructive"
+                  ? "ring-1 ring-destructive"
                   : ""
               }`}
             >
-              <CardContent className="p-3 sm:p-6">
-                <div className="mb-3 sm:mb-4 overflow-hidden rounded-lg">
+              <CardContent className="p-3">
+                <div className="mb-3 overflow-hidden rounded-lg">
                   <AspectRatio ratio={1}>
                     <img
                       src={image.image_url}
@@ -209,51 +209,57 @@ const Approval = () => {
                   </AspectRatio>
                 </div>
 
-                <div className="space-y-3 sm:space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor={`reference-${image.id}`}>
-                      Referência (opcional)
-                    </Label>
-                    <Input
-                      id={`reference-${image.id}`}
-                      value={image.reference || ""}
-                      onChange={(e) => updateImage(image.id, "reference", e.target.value)}
-                      placeholder="Ex: Imagem 01"
-                      disabled={isCompleted}
-                    />
-                  </div>
+                <div className="space-y-3">
+                  {!isMobile && (
+                    <>
+                      <div className="space-y-2">
+                        <Label htmlFor={`reference-${image.id}`} className="text-sm">
+                          Referência (opcional)
+                        </Label>
+                        <Input
+                          id={`reference-${image.id}`}
+                          value={image.reference || ""}
+                          onChange={(e) => updateImage(image.id, "reference", e.target.value)}
+                          placeholder="Ex: Imagem 01"
+                          disabled={isCompleted}
+                          className="text-sm"
+                        />
+                      </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor={`observation-${image.id}`}>
-                      Observação (opcional)
-                    </Label>
-                    <Textarea
-                      id={`observation-${image.id}`}
-                      value={image.observation || ""}
-                      onChange={(e) => updateImage(image.id, "observation", e.target.value)}
-                      placeholder="Deixe seus comentários aqui..."
-                      rows={3}
-                      disabled={isCompleted}
-                    />
-                  </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`observation-${image.id}`} className="text-sm">
+                          Observação (opcional)
+                        </Label>
+                        <Textarea
+                          id={`observation-${image.id}`}
+                          value={image.observation || ""}
+                          onChange={(e) => updateImage(image.id, "observation", e.target.value)}
+                          placeholder="Deixe seus comentários aqui..."
+                          rows={2}
+                          disabled={isCompleted}
+                          className="text-sm"
+                        />
+                      </div>
+                    </>
+                  )}
 
-                  <div className="flex gap-3">
+                  <div className="flex gap-2">
                     <Button
                       variant="success"
-                      className="flex-1"
+                      className="flex-1 h-9 text-xs"
                       onClick={() => handleApprove(image.id)}
                       disabled={image.status === "approved" || isCompleted}
                     >
-                      <CheckCircle2 className="mr-2 h-4 w-4" />
+                      <CheckCircle2 className="mr-1 h-4 w-4" />
                       {image.status === "approved" ? "Aprovada" : "Aprovar"}
                     </Button>
                     <Button
                       variant="destructive"
-                      className="flex-1"
+                      className="flex-1 h-9 text-xs"
                       onClick={() => handleReject(image.id)}
                       disabled={image.status === "rejected" || isCompleted}
                     >
-                      <XCircle className="mr-2 h-4 w-4" />
+                      <XCircle className="mr-1 h-4 w-4" />
                       {image.status === "rejected" ? "Reprovada" : "Reprovar"}
                     </Button>
                   </div>
@@ -263,11 +269,11 @@ const Approval = () => {
           ))}
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 border-t bg-card/95 backdrop-blur-sm p-3 sm:p-4 shadow-[var(--shadow-elegant)]">
+        <div className="fixed bottom-0 left-0 right-0 border-t bg-card/95 backdrop-blur-sm p-3 shadow-sm">
           <div className="container mx-auto max-w-3xl">
             <Button
-              size="lg"
-              className="w-full text-sm sm:text-base"
+              size="default"
+              className="w-full h-10 text-sm"
               onClick={handleFinalize}
               disabled={loading || isCompleted}
             >
